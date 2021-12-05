@@ -1,0 +1,16 @@
+{
+  "name": "renamer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1"
+  },
+  "dependencies": {
+    "@types/node": "^16.11.11",
+    "@types/readline-sync": "^1.4.4",
+    "readline-sync": "^1.4.10",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
+}

@@ -2,11 +2,14 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "lib": ["esNext", "dom"],
+        "lib": [
+            "esNext",
+            "dom"
+        ],
         "sourceMap": true,
         "jsx": "react",
-        "allowJs":true,
-        "esModuleInterop":true,
+        "allowJs": true,
+        "esModuleInterop": true,
         "moduleResolution": "node",
         "noImplicitReturns": true,
         "noImplicitThis": true,
