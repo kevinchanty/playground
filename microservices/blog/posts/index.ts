@@ -11,7 +11,7 @@ type Post = {
 const posts:Record<string, Post> = {}
 
 app.get('/posts', (req, res) => {
-    res.send(posts);
+    res.json(posts);
 });
 
 app.post('/posts', (req, res) => {
@@ -23,7 +23,7 @@ app.post('/posts', (req, res) => {
         title,
     };
 
-    res.status(201).send(posts[id]);
+    res.status(201).json(posts[id]);
 });
 
 app.listen(4000, () => {
