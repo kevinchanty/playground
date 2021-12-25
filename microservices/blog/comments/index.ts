@@ -8,14 +8,14 @@ app.use(express.json());
 const commentsByPostId = {} as Record<string, { id: string, content: string }[]>;
 
 app.get('/posts/:id/comments', (req, res) => {
-    res.json(commentsByPostId[req.params.id] || []);
+    res.json(commentsByPostId[req.params.id] ?? []);
 });
 
 app.post('/posts/:id/comments', (req, res) => {
     const commentId = randomBytes(4).toString('hex');
     const { content } = req.body;
 
-    const comments = commentsByPostId[req.params.id] || [];
+    const comments = commentsByPostId[req.params.id] ?? [];
 
     comments.push({ id: commentId, content });
 
