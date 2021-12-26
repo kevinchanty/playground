@@ -27,9 +27,6 @@ export default function PostList() {
         )
     })
 
-
-    console.log(posts);
-
     return <div className="d-flex flex-row flex-wrap justify-content-between">
         {renderedPosts}
     </div>
