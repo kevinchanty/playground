@@ -1,9 +1,10 @@
 import express from 'express'
 import { randomBytes } from 'crypto'
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
-
+app.use(cors()); 
 
 const commentsByPostId = {} as Record<string, { id: string, content: string }[]>;
 
