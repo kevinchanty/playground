@@ -3,13 +3,20 @@ import { useEffect, useState } from "react"
 import CommentCreate from "../CommentCreate";
 import CommentList from "../CommentList";
 
+type Posts =Record<string, { 
+    id: string, 
+    title: string, 
+    comments:{
+        id:string,
+        content:string,    
+    } []
+}>
 
 export default function PostList() {
-    const [posts, setPosts] = useState<Record<string, { id: string, title: string }>>({});
+    const [posts, setPosts] = useState<Posts>({});
 
     const fetchPosts = async () => {
-        const res = await axios.get('http://localhost:4000/posts');
-
+        const res = await axios.get('http://localhost:4002/posts');
         setPosts(res.data);
     }
 
@@ -22,7 +29,7 @@ export default function PostList() {
             <div className="card" style={{ width: '30%', marginBottom: '20px' }} key={post.id}>
                 <div className="card-body">
                     <h3>{post.title}</h3>
-                    <CommentList postId={post.id}/>
+                    <CommentList comments={post.comments}/>
                     <CommentCreate postId={post.id}/>
                 </div>
             </div>
