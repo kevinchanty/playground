@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { moveSyntheticComments } from 'typescript';
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ type Posts = Record<string, {
     comments: {
         id: string,
         content: string
+        status: "pending" | 'approved' | 'rejected'
     }[]
 }>;
 
@@ -28,15 +30,31 @@ app.post('/events', (req, res) => {
             const { id, title } = data;
             posts[id] = { id, title, comments: [] };
             break;
-        }
+        };
 
         case ("CommentCreated"): {
-            const { id, content, postId } = data;
+            const { id, content, postId, status } = data;
 
             const post = posts[postId];
-            post.comments.push({ id, content });
+            post.comments.push({ id, content, status });
             break;
         };
+
+        case ("CommentUpdated"): {
+            const {id, postId, content, status} = data;
+            console.log(status);
+            
+
+            const post = posts[postId];
+            const comment = post.comments.find(item=> {
+                return item.id === id;
+            });
+
+            comment!.status = status;
+            comment!.content = content;
+
+            break;
+        }
     };
 
     console.log(posts);

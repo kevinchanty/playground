@@ -8,8 +8,9 @@ type Posts =Record<string, {
     title: string, 
     comments:{
         id:string,
-        content:string,    
-    } []
+        content:string,
+        status: 'pending' | 'approved' | 'rejected',
+    } [],
 }>
 
 export default function PostList() {

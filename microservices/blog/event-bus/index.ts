@@ -1,7 +1,6 @@
 import express, { Request } from 'express';
 import * as core from 'express-serve-static-core';
 import axios from 'axios';
-import { CoreTransformationContext } from 'typescript';
 
 const app = express();
 app.use(express.json());
@@ -9,10 +8,15 @@ app.use(express.json());
 app.post('/events', (req: Request<core.ParamsDictionary, any, {}>, res) => {
     const event = req.body;
 
-    axios.post('http://localhost:4000/events', event);
-    axios.post('http://localhost:4001/events', event);
-    axios.post('http://localhost:4002/events', event);
-
+    try {
+        axios.post('http://localhost:4000/events', event);
+        axios.post('http://localhost:4001/events', event);
+        axios.post('http://localhost:4002/events', event);
+        axios.post('http://localhost:4003/events', event);
+    }catch (error) {
+        console.log(error);
+    }
+        
     res.send({ status: 'OK' });
 });
 
