@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { moveSyntheticComments } from 'typescript';
+import axios from 'axios';
 
 const app = express();
 app.use(express.json());
@@ -18,13 +18,7 @@ type Posts = Record<string, {
 
 const posts: Posts = {};
 
-app.get('/posts', (req, res) => {
-    res.json(posts);
-});
-
-app.post('/events', (req, res) => {
-    const { type, data } = req.body;
-
+function handleEvent(type: string,data: any) {
     switch (type) {
         case ("PostCreated"): {
             const { id, title } = data;
@@ -41,12 +35,10 @@ app.post('/events', (req, res) => {
         };
 
         case ("CommentUpdated"): {
-            const {id, postId, content, status} = data;
-            console.log(status);
-            
+            const { id, postId, content, status } = data;
 
             const post = posts[postId];
-            const comment = post.comments.find(item=> {
+            const comment = post.comments.find(item => {
                 return item.id === id;
             });
 
@@ -56,11 +48,28 @@ app.post('/events', (req, res) => {
             break;
         }
     };
+}
 
-    console.log(posts);
+app.get('/posts', (req, res) => {
+    res.json(posts);
+});
+
+app.post('/events', (req, res) => {
+    const { type, data } = req.body;
+
+    handleEvent(type, data);
+
     res.send({});
 });
 
-app.listen(4002, () => {
+app.listen(4002, async () => {
     console.log("Query Services Listening to 4002.")
+
+    const res = await axios.get('http://localhost:4005/events');
+
+    for (const event of res.data) {
+        console.log('Processing event:', event.type);
+        handleEvent(event.type, event.data);
+    }
+    
 });
