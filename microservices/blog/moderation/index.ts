@@ -31,6 +31,6 @@ app.post('/events', async (req, res) => {
     res.send({});
 });
 
-app.listen(4003, () => {
+// app.listen(4003, () => 
     console.log("Moderation Services is listenning to 4003.");
 })
