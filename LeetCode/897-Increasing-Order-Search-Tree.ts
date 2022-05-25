@@ -44,9 +44,24 @@ class TreeNode {
 
 
 function increasingBST(root: TreeNode | null): TreeNode | null {
-    if (root.left !== null) {
-        return new TreeNode(root.val, increasingBST(root.left), root)
-    } else {
-        return new TreeNode(root.val, null, null)
+    let inOrderResult: number[] = []
+
+    let answerNode = new TreeNode()
+    let current = answerNode;
+
+    for (const val of inOrderResult) {
+        current.val = val;
+        current.right = new TreeNode();
+        current = current.right
     }
+    return answerNode;
 };
+
+function inOrder(node: TreeNode, answer: number[]) {
+    if (node === null) { return };
+
+    inOrder(node.left, answer);
+    answer.push(node.val);
+    inOrder(node.right, answer);
+
+}
