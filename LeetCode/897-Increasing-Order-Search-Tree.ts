@@ -65,3 +65,6 @@ function inOrder(node: TreeNode, answer: number[]) {
     inOrder(node.right, answer);
 
 }
+
+
+let testNode = new TreeNode(5,new TreeNode(1),new TreeNode(7))
