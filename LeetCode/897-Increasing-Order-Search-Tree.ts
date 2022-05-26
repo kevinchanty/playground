@@ -30,41 +30,44 @@
  */
 
 class TreeNode {
-    val: number
-    left: TreeNode | null
-    right: TreeNode | null
+    val: number;
+    left: TreeNode | null;
+    right: TreeNode | null;
     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-        this.val = (val === undefined ? 0 : val)
-        this.left = (left === undefined ? null : left)
-        this.right = (right === undefined ? null : right)
+      this.val = val === undefined ? 0 : val;
+      this.left = left === undefined ? null : left;
+      this.right = right === undefined ? null : right;
     }
-}
-
-
-
-
-function increasingBST(root: TreeNode | null): TreeNode | null {
-    let inOrderResult: number[] = []
-
-    let answerNode = new TreeNode()
+  }
+  
+  function increasingBST(root: TreeNode | null): TreeNode | null {
+    let inOrderResult: number[] = [];
+  
+    inOrder(root, inOrderResult);
+  
+    let answerNode = new TreeNode(inOrderResult[0]);
     let current = answerNode;
-
-    for (const val of inOrderResult) {
-        current.val = val;
-        current.right = new TreeNode();
-        current = current.right
+  
+    for (const val of inOrderResult.splice(1)) {
+      current.right = new TreeNode(val);
+      current = current.right;
     }
     return answerNode;
-};
-
-function inOrder(node: TreeNode, answer: number[]) {
-    if (node === null) { return };
-
+  }
+  
+  function inOrder(node: TreeNode | null, answer: number[]) {
+    if (node === null) {
+      return;
+    }
+  
     inOrder(node.left, answer);
     answer.push(node.val);
     inOrder(node.right, answer);
-
-}
-
-
-let testNode = new TreeNode(5,new TreeNode(1),new TreeNode(7))
+  }
+  
+  let testNode = new TreeNode(5, new TreeNode(1), new TreeNode(7));
+  
+  let answer: number[] = [];
+  inOrder(increasingBST(testNode), answer);
+  
+  export {};
