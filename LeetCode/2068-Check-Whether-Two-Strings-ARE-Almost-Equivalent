@@ -1,0 +1,58 @@
+function checkAlmostEquivalent1(word1: string, word2: string): boolean {
+  let difference = new Map<string, number>();
+  let answer = true;
+
+  for (let i of word1) {
+    difference.set(i, (difference.get(i) ?? 0) + 1);
+  }
+
+  for (let i of word2) {
+    difference.set(i, (difference.get(i) ?? 0) - 1);
+  }
+
+  difference.forEach((value) => {
+    if (Math.abs(value) > 3) {
+      answer = false;
+    }
+  });
+  return answer;
+}
+
+function checkAlmostEquivalent2(word1: string, word2: string): boolean {
+  let difference = new Map<string, number>();
+
+  for (let i = 0; i < word1.length; i++) {
+    if (word1[i] !== word2[i]) {
+      difference.set(word1[i], (difference.get(word1[i]) ?? 0) + 1);
+      difference.set(word2[i], (difference.get(word2[i]) ?? 0) - 1);
+    }
+  }
+
+  let answer = true;
+  difference.forEach((value) => {
+    if (Math.abs(value) > 3) {
+      answer = false;
+    }
+  });
+  return answer;
+}
+
+function checkAlmostEquivalent(word1: string, word2: string): boolean {
+  let difference = new Map<string, number>();
+
+  for (let i = 0; i < word1.length; i++) {
+    if (word1[i] !== word2[i]) {
+      difference.set(word1[i], (difference.get(word1[i]) ?? 0) + 1);
+      difference.set(word2[i], (difference.get(word2[i]) ?? 0) - 1);
+    }
+
+    if (
+      Math.abs(difference.get(word1[i])) > 3 ||
+      Math.abs(difference.get(word2[i])) > 3
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
