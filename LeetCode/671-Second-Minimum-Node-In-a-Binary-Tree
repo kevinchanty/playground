@@ -1,0 +1,32 @@
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     val: number
+ *     left: TreeNode | null
+ *     right: TreeNode | null
+ *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *     }
+ * }
+ */
+
+function findSecondMinimumValue(root: TreeNode | null): number {
+  let answer = new Set<number>();
+  inOrder(root, answer);
+
+  let answerArr = Array.from(answer)
+
+
+  return answerArr.sort()[1] ?? -1
+}
+
+function inOrder(root: TreeNode | null, answer: Set<number>) {
+  if (root === null) {
+    return;
+  }
+  inOrder(root.left, answer);
+  answer.add(root.val);
+  inOrder(root.right, answer);
+}
