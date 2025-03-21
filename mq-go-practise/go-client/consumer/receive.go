@@ -14,6 +14,10 @@ func failOnError(err error, msg string) {
 	}
 }
 
+func forever() {
+	select {}
+}
+
 func main() {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to open connection")
@@ -21,14 +25,20 @@ func main() {
 
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open channel")
+	ch.Qos(20, 0, false)
 
-	q, err := ch.QueueDeclare(
-		"hello",
-		false,
-		false,
-		false,
-		false,
-		nil)
+	err = ch.ExchangeDeclare(
+		"logs",   // name
+		"fanout", // type
+		false,    // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+
+	q, err := ch.QueueDeclare("", false, false, true, false, nil)
+	ch.QueueBind(q.Name, "", "logs", false, nil)
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -41,23 +51,36 @@ func main() {
 	)
 	failOnError(err, "Failed to register consumer")
 
-	var forever chan struct{}
+	// var forever chan struct{}
 
 	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			dotCount := bytes.Count(d.Body, []byte("."))
-			log.Printf("count: %d", dotCount)
+			log.Printf("dot count: %d", dotCount)
+			log.Printf("Create user id: %s", d.UserId)
 
-			t := time.Duration(dotCount)
-			time.Sleep(t * time.Second)
-			log.Printf("Done")
-			err := d.Ack(false)
-			failOnError(err, "Failed to ack")
+			go func() {
+				t := time.Duration(dotCount)
+				time.Sleep(t * time.Second)
+				log.Printf("Message Done: %s", d.Body)
+
+				// var err error
+				if d.Redelivered {
+					log.Printf("redelivered!")
+					d.Nack(false, false)
+				} else {
+					log.Printf("not redelivered!")
+
+					d.Nack(false, true)
+				}
+				failOnError(err, "Failed to ack")
+			}()
+
 		}
 	}()
 
 	log.Println("[*] Waiting for message. To exit press CTRL+C")
 
-	<-forever
+	forever()
 }
