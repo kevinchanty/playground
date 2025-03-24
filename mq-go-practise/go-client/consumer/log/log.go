@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"log"
-	"time"
+	"os"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -28,22 +27,31 @@ func main() {
 	ch.Qos(20, 0, false)
 
 	err = ch.ExchangeDeclare(
-		"logs",   // name
-		"fanout", // type
-		false,    // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+		"zoo",   // name
+		"topic", // type
+		false,   // durable
+		false,   // auto-deleted
+		false,   // internal
+		false,   // no-wait
+		nil,     // arguments
 	)
+	failOnError(err, "Failed to declare exchange")
 
-	q, err := ch.QueueDeclare("", false, false, true, false, nil)
-	ch.QueueBind(q.Name, "", "logs", false, nil)
+	q, err := ch.QueueDeclare(os.Args[1], false, false, true, false, nil)
+
+	if len(os.Args) < 2 {
+		log.Printf("Usage: %s [info] [warning] [error]", os.Args[0])
+		os.Exit(0)
+	}
+
+	for _, s := range os.Args[1:] {
+		ch.QueueBind(q.Name, s, "zoo", false, nil)
+	}
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
-		false,  // auto-ack
+		true,   // auto-ack
 		false,  // exclusive
 		false,  // no-local
 		false,  // no-wait
@@ -55,22 +63,7 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-			dotCount := bytes.Count(d.Body, []byte("."))
-			log.Printf("dot count: %d", dotCount)
-			log.Printf("Create user id: %s", d.UserId)
-
-			go func() {
-				t := time.Duration(dotCount)
-				time.Sleep(t * time.Second)
-				log.Printf("Message Done: %s", d.Body)
-
-				// var err error
-				err := d.Ack(false)
-
-				failOnError(err, "Failed to ack")
-			}()
-
+			log.Printf(" %s", d.Body)
 		}
 	}()
 

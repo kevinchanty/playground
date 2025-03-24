@@ -18,10 +18,20 @@ func failOnError(err error, msg string) {
 
 func bodyForm(args []string) string {
 	var s string
+	if len(args) < 3 || args[2] == "" {
+		s = "hello"
+	} else {
+		s = strings.Join(args[2:], " ")
+	}
+	return s
+}
+
+func topicForm(args []string) string {
+	var s string
 	if len(args) < 2 || args[1] == "" {
 		s = "hello"
 	} else {
-		s = strings.Join(args[1:], " ")
+		s = args[1]
 	}
 	return s
 }
@@ -36,36 +46,37 @@ func main() {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs",   // name
-		"fanout", // type
-		false,    // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
-	)
-	failOnError(err, "Failed to declare exchange")
-
-	q, err := ch.QueueDeclare(
-		"hello", // name
+		"zoo",   // name
+		"topic", // type
 		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
+		false,   // auto-deleted
+		false,   // internal
 		false,   // no-wait
 		nil,     // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	failOnError(err, "Failed to declare exchange")
+
+	// q, err := ch.QueueDeclare(
+	// 	"hello", // name
+	// 	false,   // durable
+	// 	false,   // delete when unused
+	// 	false,   // exclusive
+	// 	false,   // no-wait
+	// 	nil,     // arguments
+	// )
+	// failOnError(err, "Failed to declare a queue")
 
 	publishCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	body := bodyForm(os.Args)
+	topic := topicForm(os.Args)
 
 	err = ch.PublishWithContext(publishCtx,
-		"logs", // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
+		"zoo", // exchange
+		topic, // routing key
+		false, // mandatory
+		false, // immediate
 		amqp091.Publishing{
 			// DeliveryMode: amqp091.Persistent,
 			ContentType: "text/plain",
