@@ -1,4 +1,4 @@
-module mq-client
+module mq-practice
 
 go 1.23.1
 

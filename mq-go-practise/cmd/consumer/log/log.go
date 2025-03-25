@@ -59,8 +59,6 @@ func main() {
 	)
 	failOnError(err, "Failed to register consumer")
 
-	// var forever chan struct{}
-
 	go func() {
 		for d := range msgs {
 			log.Printf(" %s", d.Body)
